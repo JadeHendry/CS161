@@ -1,0 +1,185 @@
+import javafx.application.Application;
+import javafx.geometry.*;
+import javafx.stage.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
+
+
+public class ConversionCalculator extends Application {
+
+	//fields
+	private TextField inches;
+	private TextField meters;
+	private TextField centimeters;
+	private TextField yards;
+	private Label resultsLabel1;
+	private Label resultsLabel2;
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	
+	@Override
+	public void start(Stage primaryStage){
+		
+		//creating labels
+		Label centimetersL = new Label("Centimeters: ");
+		Label metersL = new Label("Meters: ");
+		Label inchesL = new Label("Inches:          ");
+		Label yardsL = new Label("Yards:   ");
+		resultsLabel1 = new Label("");
+		resultsLabel2 = new Label("");
+		
+		//creating buttons
+		Button clear = new Button("Clear");
+		Button calculate = new Button("Calculate");
+		Button exit = new Button("Exit");
+		
+		//Resizing buttons to be the same
+		clear.setPrefSize(100, 10);
+		calculate.setPrefSize(100, 10);
+		exit.setPrefSize(100, 10);
+		
+		//creating input textfields
+		inches = new TextField("0.0");
+		centimeters = new TextField("0.0");
+		meters = new TextField("0.0");
+		yards = new TextField("0.0");
+		
+		//registering event handlers for buttons
+		clear.setOnAction(new ClearButtonHandler());
+		calculate.setOnAction(new CalculateButtonHandler());
+		exit.setOnAction(new ExitButtonHandler());
+		
+		//creating HBoxes to store labels and textfields
+		HBox hbox1 = new HBox(10, centimetersL, centimeters);
+		HBox hbox2 = new HBox(10, inchesL, inches);
+		HBox hbox3 = new HBox(10, metersL, meters);
+		HBox hbox4 = new HBox(10, yardsL, yards);
+		
+		//creating a VBox to store the buttons and setting padding
+		VBox vbox = new VBox(clear, calculate, exit);
+		vbox.setPadding(new Insets(10));
+		
+		//creating gridpane to  store HBoxes
+		GridPane gridpane = new GridPane();
+		gridpane.setGridLinesVisible(false); //for testing purposes
+		gridpane.setPadding(new Insets(10));
+		gridpane.setVgap(10);
+		gridpane.setHgap(10);
+		
+		//placing HBoxes in gridpane
+		gridpane.add(hbox1, 0, 0);
+		gridpane.add(hbox2, 0, 1);
+		gridpane.add(hbox3, 1, 0);
+		gridpane.add(hbox4, 1	, 1);
+		gridpane.add(resultsLabel1, 0, 2);
+		gridpane.add(resultsLabel2, 1, 2);
+		
+		//creating final HBox to place everything
+		HBox rootBox = new HBox(gridpane, vbox);
+		rootBox.setPrefWidth(720);
+		
+		//create scene
+		Scene scene = new Scene(rootBox);
+		
+		//Add scene to stage
+		primaryStage.setScene(scene);
+		
+		//Setting stage title
+		primaryStage.setTitle("Conversion Calculator");
+		
+		//Showing the window
+		primaryStage.show();
+		
+		
+				
+	}
+
+	
+	class ClearButtonHandler implements EventHandler<ActionEvent> {
+
+		@Override
+		public void handle(ActionEvent event) {
+			inches.setText("0.0");
+			meters.setText("0.0");
+			centimeters.setText("0.0");
+			yards.setText("0.0");
+			resultsLabel1.setText("");
+			resultsLabel2.setText("");
+		}
+	}
+	
+	
+	class CalculateButtonHandler implements EventHandler<ActionEvent> {
+		
+		@Override
+		public void handle(ActionEvent event) {
+			//getting all values as double
+			double inch = Double.parseDouble(inches.getText());
+			double yar = Double.parseDouble(yards.getText());
+			double cent = Double.parseDouble(centimeters.getText());
+			double met = Double.parseDouble(meters.getText());
+			
+			
+			//decision structure to convert the proper one to other metrics
+			if ((inch != 0.0 && yar != 0.0) || (inch != 0.0 && met != 0.0) || (inch != 0.0 && cent != 0.0)
+					|| (yar != 0.0 && met != 0.0) || (yar != 0.0 && cent != 0.0) || (met != 0.0 && cent != 0.0)) {
+				resultsLabel1.setText("More than one text field has a number.");
+				resultsLabel2.setText("Please click the clear button and try again.");
+			}
+			else if (inch != 0.0) {
+				yar = inch * .0278;
+				cent = inch * 2.54;
+				met = inch * .0254;
+				resultsLabel1.setText("");
+				resultsLabel2.setText("");
+			}
+			else if (yar != 0.0) {
+				inch = yar * 36.0;
+				cent = yar * 91.44;
+				met = yar * .9144;
+				resultsLabel1.setText("");
+				resultsLabel2.setText("");
+			}
+			else if (cent != 0.0) {
+				inch = cent * .3937;
+				yar = cent * .0109;
+				met = cent * .01;
+				resultsLabel1.setText("");
+				resultsLabel2.setText("");
+			}
+			else if (met != 0.0) {
+				inch = met * 39.3701;
+				cent = met * 100.0;
+				yar = met * 1.0936;
+				resultsLabel1.setText("");
+				resultsLabel2.setText("");
+			}
+			
+			
+			//rounding number and putting them back into the text fields
+			inches.setText(String.format("%.2f", inch));
+			yards.setText(String.format("%.2f", yar));
+			centimeters.setText(String.format("%.2f", cent));
+			meters.setText(String.format("%.2f", met));
+			
+			
+		}
+	}
+	
+	
+	class ExitButtonHandler implements EventHandler<ActionEvent> {
+		
+			@Override
+			public void handle(ActionEvent event) {
+				System.exit(0);
+			}
+		}
+	
+	
+}
